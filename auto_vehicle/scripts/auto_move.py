@@ -19,17 +19,25 @@ r = rospy.Rate(10)
 def callback(msg):
     min = 1000
     index = 0
+    sum_left=0
+    sum_right=0
     for x in range(83,417):
         if msg.ranges[x]<min:
             min = msg.ranges[x]
             index = x
-    if min>0.4:
-        move.linear.x = 0.6
+    for i in range(index,667):
+        sum_right+=msg.ranges[i]
+
+    for j in range(0,index):
+        sum_left+=msg.ranges[j]
+
+    if min>0.5:
+        move.linear.x = 0.3
         move.angular.z = 0
         pub.publish(move)
         r.sleep()
     else:
-        if index < 334:
+        if sum_right>sum_left:
             move.linear.x = 0
             move.angular.z = 0.3
             pub.publish(move)
